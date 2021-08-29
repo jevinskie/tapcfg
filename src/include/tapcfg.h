@@ -261,6 +261,18 @@ TAPCFG_API int tapcfg_iface_set_mtu(tapcfg_t *tapcfg, int mtu);
 TAPCFG_API int tapcfg_iface_set_ipv4(tapcfg_t *tapcfg, const char *addr, unsigned char netbits);
 
 /**
+ * Add a new IPv4 address and netmask to the interface and update
+ * the routing tables accordingly.
+ * @param tapcfg is a pointer to an inited structure
+ * @param addr is a string containing the address in standard numeric format
+ * @param netbits is the number of bits in the netmask for this subnet,
+ *        must be between [1, 32]
+ * @return Negative value if an error happened, non-negative otherwise.
+ */
+TAPCFG_API int tapcfg_iface_add_ipv4(tapcfg_t *tapcfg, const char *addr, unsigned char netbits);
+
+
+/**
  * Set the IPv6 address and netmask of the interface and update
  * the routing tables accordingly.
  * @param tapcfg is a pointer to an inited structure

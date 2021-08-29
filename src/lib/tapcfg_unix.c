@@ -502,7 +502,52 @@ tapcfg_iface_set_ipv4(tapcfg_t *tapcfg, const char *addrstr, unsigned char netbi
 
 	tapcfg_ifaddr_ioctl(tapcfg,
 	                    addr,
-	                    ntohl(mask));
+	                    ntohl(mask),
+	                    0 /* no_delete */);
+
+	return 0;
+}
+
+int
+tapcfg_iface_add_ipv4(tapcfg_t *tapcfg, const char *addrstr, unsigned char netbits)
+{
+	struct addrinfo hints, *res;
+	struct sockaddr_in *saddr;
+	unsigned int addr, mask;
+	int i;
+
+	assert(tapcfg);
+
+	if (!tapcfg->started) {
+		return 0;
+	}
+
+	if (netbits == 0 || netbits > 32) {
+		return -1;
+	}
+
+	/* Check that the given IPv4 address is valid */
+	memset(&hints, 0, sizeof(hints));
+	hints.ai_flags = AI_NUMERICHOST;
+	hints.ai_family = AF_INET;
+	if (getaddrinfo(addrstr, NULL, &hints, &res)) {
+		taplog_log(&tapcfg->taplog, TAPLOG_ERR,
+		           "Error converting string '%s' to "
+		           "address, check the format", addrstr);
+		return -1;
+	}
+	saddr = (struct sockaddr_in *) res->ai_addr;
+	addr = saddr->sin_addr.s_addr;
+	freeaddrinfo(res);
+
+	/* Calculate the netmask from the network bit length */
+	for (i=netbits,mask=0; i; i--)
+		mask = (mask >> 1)|(1 << 31);
+
+	tapcfg_ifaddr_ioctl(tapcfg,
+	                    addr,
+	                    ntohl(mask),
+	                    1 /* no_delete */);
 
 	return 0;
 }

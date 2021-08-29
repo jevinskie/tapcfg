@@ -125,8 +125,10 @@ tapcfg_hwaddr_ioctl(tapcfg_t *tapcfg,
 static int
 tapcfg_ifaddr_ioctl(tapcfg_t *tapcfg,
                     unsigned int addr,
-                    unsigned int mask)
+                    unsigned int mask,
+                    int no_delete)
 {
+	(void)no_delete; // NOP on linux
 	struct ifreq ifr;
 	struct sockaddr_in *sin;
 	struct in_addr *in_addr;

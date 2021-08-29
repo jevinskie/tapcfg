@@ -19,7 +19,7 @@ AddOption('--build-universal',
           action='store_true', dest='universal', default=False,
           help='Create Mac 32-bit and 64-bit universal binaries')
 
-VariantDir('build', 'src')
+VariantDir('build', 'src', duplicate=False)
 env = Environment()
 env.Tool('gmcs', toolpath = ['scons-tools'])
 

@@ -421,8 +421,10 @@ tapcfg_hwaddr_ioctl(tapcfg_t *tapcfg,
 static int
 tapcfg_ifaddr_ioctl(tapcfg_t *tapcfg,
                     unsigned int addr,
-                    unsigned int mask)
+                    unsigned int mask,
+                    int no_delete)
 {
+	(void)no_delete; // NOP on solaris (lol)
 	struct ifreq ifr;
 	struct sockaddr_in *sin;
 

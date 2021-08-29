@@ -268,21 +268,24 @@ tapcfg_hwaddr_ioctl(tapcfg_t *tapcfg,
 static int
 tapcfg_ifaddr_ioctl(tapcfg_t *tapcfg,
                     unsigned int addr,
-                    unsigned int mask)
+                    unsigned int mask,
+                    int no_delete)
 {
 	struct ifreq ridreq;
 	struct ifaliasreq addreq;
 	struct sockaddr_in *sin;
 	int ret;
 
-	memset(&ridreq, 0, sizeof(struct ifreq));
-	strcpy(ridreq.ifr_name, tapcfg->ifname);
-	ret = ioctl(tapcfg->ctrl_fd, SIOCDIFADDR, &ridreq);
-	if (ret == -1 && errno != EADDRNOTAVAIL) {
-		taplog_log(&tapcfg->taplog, TAPLOG_ERR,
-		          "Error calling SIOCDIFADDR: %s",
-		           strerror(errno));
-		return -1;
+	if (!no_delete) {
+		memset(&ridreq, 0, sizeof(struct ifreq));
+		strcpy(ridreq.ifr_name, tapcfg->ifname);
+		ret = ioctl(tapcfg->ctrl_fd, SIOCDIFADDR, &ridreq);
+		if (ret == -1 && errno != EADDRNOTAVAIL) {
+			taplog_log(&tapcfg->taplog, TAPLOG_ERR,
+			          "Error calling SIOCDIFADDR: %s",
+			           strerror(errno));
+			return -1;
+		}
 	}
 
 	memset(&addreq, 0, sizeof(struct ifaliasreq));
